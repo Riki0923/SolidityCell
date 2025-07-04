@@ -2,7 +2,6 @@ import type { HardhatUserConfig } from "hardhat/config";
 import * as dotenv from "dotenv";
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import { configVariable } from "hardhat/config";
-import { zircuitGarfieldTestnet } from "viem/chains";
 dotenv.config();
 
 const config: HardhatUserConfig = {
@@ -25,14 +24,34 @@ const config: HardhatUserConfig = {
     },
   },
 
+chainDescriptors: {
+    5003: {
+      name: "mantleSepoliaTestnet",
+      blockExplorers: {
+        etherscan: {
+          name: "Mantle Sepolia Explorer",
+          url: "https://explorer.sepolia.mantle.xyz/",
+          apiUrl: "https://explorer.sepolia.mantle.xyz/api", // This is a standard guess, but not officially documented or supported.
+        },
+      },
+    },
+  },
+
   networks: {
-    baseSepolia: {
+    // baseSepolia was for first test, worked perfectly, leaving here for reference
+
+    // baseSepolia: {
+    //   type: "http",
+    //   chainType: "optimism",
+    //   url: configVariable("BASE_SEPOLIA_RPC_URL"),
+    //   accounts: [configVariable("PRIVATE_KEY")],
+    // },
+    
+    mantleSepoliaTestnet: {
       type: "http",
-      chainType: "optimism",
-      url: configVariable("BASE_SEPOLIA_RPC_URL"),
+      url: configVariable("MANTLE_SEPOLIA_RPC_URL"),
       accounts: [configVariable("PRIVATE_KEY")],
     },
-    
   },
 
   verify: {
