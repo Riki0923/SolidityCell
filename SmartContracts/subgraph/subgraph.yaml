@@ -8,7 +8,7 @@ dataSources:
     name: SolidityCell
     network: base-sepolia
     source:
-      address: "0x4dc509fb360ae7afb153b263eb6d021616dfaf6a"
+      address: "0x5b19dbc8e2d9bca8d31ff81225224638397a852f"
       abi: SolidityCell
       startBlock: 27988192
     mapping:

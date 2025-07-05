@@ -33,25 +33,23 @@ contract SolidityCell {
     }
 
     // --- Puzzle #2: The Data Oracle ---
-function solveCell2(uint256 _firstToCellValue) external {
+function solveCell2(
+    address _firstNewOwner,
+    uint256 _usdcBalance,
+    uint256 _toCellValue
+) external {
     require(playerProgress[msg.sender] == 1, "You are not at Cell 2.");
 
-    // The player must query their subgraph to find that the first advancement is to cell 1.
-    require(_firstToCellValue == 1, "Incorrect answer from your subgraph.");
+    // Expected answers — hardcoded for now
+    address expectedOwner = 0x63dED784c8Da63A79eE47f9a53BcB1BAD1d9F3e0;
+    uint256 expectedUSDC = 60975000; // <-- fill with USDC value in smallest units
+    uint256 expectedToCell = 1;
+
+    require(_firstNewOwner == expectedOwner, "Incorrect answer 1 (newOwner).");
+    require(_usdcBalance == expectedUSDC, "Incorrect answer 2 (USDC balance).");
+    require(_toCellValue == expectedToCell, "Incorrect answer 3 (toCell).");
 
     playerProgress[msg.sender] = 2;
     emit PlayerAdvanced(msg.sender, 2);
 }
-
-    // --- Escape Function (Final Goal) ---
-    function escape() external {
-        // The player must now have solved both puzzles to escape.
-        require(
-            playerProgress[msg.sender] == 2,
-            "You have not solved all the puzzles yet."
-        );
-
-        proofOfEscape.safeMint(msg.sender);
-        emit PlayerEscaped(msg.sender);
-    }
 }

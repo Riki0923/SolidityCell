@@ -1,85 +1,82 @@
 import hre from "hardhat";
+import * as readline from "readline";
 import * as fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { createInterface } from "node:readline/promises"; // Use the modern promises API
 
-// --- HELPER FUNCTIONS ---
-
+// Setup __dirname for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// --- Helper to get deployed address ---
 function getDeployedAddresses() {
   const filePath = path.join(__dirname, "..", "deployedAddresses.json");
-  if (!fs.existsSync(filePath)) {
-    throw new Error("Could not find deployedAddresses.json. Please run the deployment script first.");
-  }
-  return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  const addresses = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  return addresses;
 }
 
-// --- MAIN SCRIPT ---
-
-async function main() {
-  // 1. SETUP
-  console.log("========================================");
-  console.log("         CELL #2: THE GRAPH");
-  console.log("========================================");
-  console.log("\nYou have advanced. This cell requires you to query on-chain data using");
-  console.log("The Graph's ecosystem to find the three parts of the key.\n");
-
-  const { solidityCell: SOLIDITY_CELL_ADDRESS } = getDeployedAddresses();
-  console.log(`Connecting to contract at: ${SOLIDITY_CELL_ADDRESS}\n`);
-
-    const { viem } = await hre.network.connect();
-
-  const solidityCellContract = await viem.getContractAt("SolidityCell", SOLIDITY_CELL_ADDRESS)
-
-  const publicClient = await viem.getPublicClient();
-
-  // 2. ATTEMPT TO SOLVE
-
-    // Create the readline interface ONCE, outside the loop.
-  const rl = createInterface({
+// --- Helper to prompt the user ---
+function promptUser(question: string): Promise<string> {
+  const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
 
-  try {
-    let isSolved = false;
-    while (!isSolved) {
-      // ASK ALL QUESTIONS using the single reader instance
-      console.log("--- Please provide the answers for Cell #2 ---");
-      const answer1 = await rl.question("Q1: What is the total transaction count for the Uniswap USDC/WETH pool? > ");
-      const answer2 = await rl.question("Q2: What was the total supply of DAI at block 18,000,000? > ");
-      const answer3 = await rl.question("Q3: What is the 4-byte selector of the most gas-intensive function in the BAYC contract? > ");
+// --- Main Function ---
+async function main() {
+  console.log("========================================");
+  console.log("           CELL #2: THE DATA ORACLE");
+  console.log("========================================\n");
+  console.log("You must answer 3 questions to escape this cell.");
+  console.log("Each answer must be typed manually based on your research.\n");
 
-      console.log("\n🔓 Submitting your answers to the contract...");
-      try {
-        const solveHash = await solidityCellContract.write.solveCell2([
-            BigInt(answer1),
-            answer2,
-            answer3 as `0x${string}`
-        ]);
-        await publicClient.waitForTransactionReceipt({ hash: solveHash });
+  const { solidityCell: SOLIDITY_CELL_ADDRESS } = getDeployedAddresses();
+  const { viem } = await hre.network.connect();
+  const contract = await viem.getContractAt("SolidityCell", SOLIDITY_CELL_ADDRESS);
+  const publicClient = await viem.getPublicClient();
 
-        console.log("🎉 CORRECT! The second cell is unlocked. You have advanced to the final challenge.");
-        isSolved = true; // This will exit the loop
-        
-      } catch (error: any) {
-        console.error("\n🔥 INCORRECT! The contract rejected your answers.");
-        if(error.shortMessage) {
-          console.error("Revert Reason:", error.shortMessage);
-        }
-        console.log("The puzzle has reset. Please try again from the beginning.\n");
+  let isSolved = false;
+
+  while (!isSolved) {
+    console.log("--- Please answer all 3 questions correctly ---");
+
+    const answer1 = await promptUser("Q1: What is the first `newOwner` address from the Super Accounts subgraph? > ");
+    const answer2 = await promptUser("Q2: What is the USDC token balance of 0x6fA26735bDCD8D598f6F1384Fc59F0180e903101? > ");
+    const answer3 = await promptUser("Q3: What is the FIRST `toCell` value in your subgraph? > ");
+
+    console.log("\n🔓 Submitting your answers to the contract...");
+
+    try {
+      const tx = await contract.write.solveCell2([
+        answer1 as `0x${string}`,
+        BigInt(answer2),
+        BigInt(answer3),
+      ]);
+      await publicClient.waitForTransactionReceipt({ hash: tx });
+
+      console.log("\n🎉 CORRECT! You have solved Cell #2 and may advance.");
+      isSolved = true;
+
+    } catch (err: any) {
+      console.error("\n🔥 INCORRECT! The contract rejected your answers.");
+      if (err.shortMessage) {
+        console.error("Revert Reason:", err.shortMessage);
       }
+      console.log("🔁 Try again.\n");
     }
-  } finally {
-    // This ensures the reader is ALWAYS closed, even if an error occurs.
-    rl.close();
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error("Fatal error:", error);
+    process.exit(1);
+  });
