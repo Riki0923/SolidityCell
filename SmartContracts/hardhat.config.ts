@@ -2,25 +2,28 @@ import type { HardhatUserConfig } from "hardhat/config";
 import * as dotenv from "dotenv";
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import { configVariable } from "hardhat/config";
+import hardhatVerifyPlugin from "@nomicfoundation/hardhat-verify";
 dotenv.config();
 
 const config: HardhatUserConfig = {
-  plugins: [hardhatToolboxViemPlugin],
+  plugins: [hardhatToolboxViemPlugin, hardhatVerifyPlugin],
 
   solidity: {
     profiles: {
       default: {
         version: "0.8.28",
       },
-      production: {
-        version: "0.8.28",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
-      },
+      // Commented this part out otherwise I am unable to verify contracts
+
+      // production: {
+      //   version: "0.8.28",
+      //   settings: {
+      //     optimizer: {
+      //       enabled: true,
+      //       runs: 200,
+      //     },
+      //   },
+      // },
     },
   },
 
