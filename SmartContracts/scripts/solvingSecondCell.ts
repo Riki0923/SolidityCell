@@ -57,7 +57,7 @@ async function main() {
       try {
         const solveHash = await solidityCellContract.write.solveCell2([
             BigInt(answer1),
-            BigInt(answer2),
+            answer2,
             answer3 as `0x${string}`
         ]);
         await publicClient.waitForTransactionReceipt({ hash: solveHash });
