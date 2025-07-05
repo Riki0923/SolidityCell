@@ -10,11 +10,10 @@ contract ProofOfEscape is ERC721, Ownable {
 
     // The constructor sets the NFT's name, symbol, and the initial owner.
     // The initial owner will be you, the deployer.
-    constructor(address initialOwner)
+    constructor()
         ERC721("Proof of Escape", "POE")
-        Ownable(initialOwner)
+        Ownable(msg.sender) // Owner defaults to the deployer
     {}
-
     /**
      * @notice Mints a new NFT trophy to the specified address.
      * @dev Can only be called by the current owner of this contract.

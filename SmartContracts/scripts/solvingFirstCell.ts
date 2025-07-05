@@ -1,12 +1,5 @@
 import hre from "hardhat";
-import {
-  keccak256,
-  concat,
-  stringToBytes,
-  toHex,
-  encodeAbiParameters,
-  parseAbiParameters,
-} from "viem";
+import * as readline from "readline";
 
 import * as fs from "fs";
 import path from "path";
@@ -23,7 +16,29 @@ function getDeployedAddresses() {
   return addresses;
 }
 
+// Helper function to prompt the user for input in the terminal
+function promptUser(question: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer);
+    });
+  });
+}
+
 async function main() {
+    // 1. WELCOME MESSAGE & SETUP
+  console.log("========================================");
+  console.log("    WELCOME TO SOLIDITY CELL");
+  console.log("========================================");
+  console.log("\nYou are a developer trapped in a series of smart contract cells.");
+  console.log("You must use your skills to find and exploit vulnerabilities to escape.\n");
+
+
   // Get the deployed contract address from the file
   const { solidityCell: SOLIDITY_CELL_ADDRESS } = getDeployedAddresses();
 
@@ -37,46 +52,44 @@ async function main() {
   // Also get the publicClient for waitin on tx hashes
   const publicClient = await viem.getPublicClient();
 
-  // --- Starting Puzzle #1: The Hashing Mismatch ---
-  console.log("\n--- Starting Puzzle #1: The Hashing Mismatch ---");
+  // 2. PRESENT PUZZLE #1
+  console.log(                "--- Puzzle #1: The Mismatched Hash ---"              );
+  console.log("The contract expects a specific keccak256 hash to unlock the first cell.");
+  console.log("The hash is derived from: abi.encode(\"Correctly\", 123, your_address)");
+  console.log("Hint: The devil is in the details of data packing.\n");
+
+  // 3. GET USER INPUT
+  // 3. GET USER INPUT WITH A LOOP
+  let userAnswer = "";
+  let isValidFormat = false;
+
+  while (!isValidFormat) {
+    userAnswer = await promptUser("Enter the correct bytes32 hash to solve Cell #1: ");
+
+    if (userAnswer.startsWith("0x") && userAnswer.length === 66) {
+      isValidFormat = true;
+    } else {
+      console.error("\n❌ Invalid format. A bytes32 hash must be 66 characters long and start with '0x'. Please try again.\n");
+    }
+  }
 
 
   // ATTEMPT 1: THE FAILING WAY (MIMICKING abi.encodePacked)
   const [wallet1, wallet2] = await viem.getWalletClients();
 
-  console.log("\n🔍 Attempt #1: Crafting hash with incorrect packing...");
-  const packedData = concat([
-    stringToBytes("Correctly"),
-    toHex(123),
-    wallet1.account.address,
-  ]);
-  const incorrectHash = keccak256(packedData);
-
-  console.log("🔓 Submitting incorrect hash (this is expected to fail)...");
+// 4. ATTEMPT TO SOLVE
+  console.log("\n🔓 Submitting your hash to the contract...");
   try {
-    const failedTxHash = await solidityCellContract.write.solveCell1([incorrectHash]);
-    await publicClient.waitForTransactionReceipt({ hash: failedTxHash });
+    const solveHash = await solidityCellContract.write.solveCell1([userAnswer as `0x${string}`]);
+    await publicClient.waitForTransactionReceipt({ hash: solveHash });
+    console.log("🎉 CORRECT! The first cell is unlocked. You have advanced.");
   } catch (error: any) {
-    console.log("🔥 Transaction failed as expected!");
-    if (error.shortMessage.includes("Incorrect hash: check data packing")) {
-        console.log("✅ Hint from contract received: 'Incorrect hash: check data packing.'");
-    } else {
-        console.log("Received an unexpected error:", error.shortMessage);
+    console.error("\n🔥 INCORRECT! The contract rejected your hash. Please check your logic and try again.");
+    // Log the specific revert reason if available
+    if(error.shortMessage) {
+      console.error("Revert Reason:", error.shortMessage);
     }
   }
-
-  // ATTEMPT 2: THE SUCCESSFUL WAY (USING PROPER ABI ENCODING)
-  console.log("\n🔍 Attempt #2: Crafting hash with correct ABI encoding...");
-  const correctlyEncodedData = encodeAbiParameters(
-    parseAbiParameters("string, uint256, address"),
-    ["Correctly", 123n, wallet1.account.address]
-  );
-  const correctHash = keccak256(correctlyEncodedData);
-  
-  console.log("🔓 Submitting correct hash...");
-  const solveHash = await solidityCellContract.write.solveCell1([correctHash]);
-  await publicClient.waitForTransactionReceipt({ hash: solveHash });
-  console.log("🎉 Cell #1 solved!");
 }
 
 main()

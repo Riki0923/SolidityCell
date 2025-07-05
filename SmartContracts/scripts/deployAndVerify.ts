@@ -20,7 +20,7 @@ async function main() {
   // 1. DEPLOY THE PROOF OF ESCAPE NFT CONTRACT
   console.log("\nDeploying ProofOfEscape contract...");
   const proofOfEscape = await viem.deployContract("ProofOfEscape", [
-    deployerAddress,
+    
   ]);
   console.log(`✅ ProofOfEscape deployed to: ${proofOfEscape.address}`);
 
@@ -49,7 +49,7 @@ async function main() {
 
   // 4. WAIT FOR BLOCK EXPLORER TO INDEX
   console.log("\n⏳ Waiting for block explorer to index the contracts...");
-  await new Promise((resolve) => setTimeout(resolve, 30000)); // 30-second delay
+  await new Promise((resolve) => setTimeout(resolve, 20000)); // 50-second delay
 
   // 5. VERIFY BOTH CONTRACTS
   console.log("\n🔍 Verifying contracts on Mantle Sepolia Explorer...");
@@ -59,8 +59,9 @@ async function main() {
     console.log("Verifying ProofOfEscape...");
     await verifyContract({
       address: proofOfEscape.address,
-      constructorArgs: [deployerAddress],
-      provider: "blockscout"
+      constructorArgs: [],
+      provider: "etherscan",
+      
     }, hre);
     console.log("✅ ProofOfEscape verified successfully!");
   } catch (error: any) {
@@ -77,7 +78,7 @@ async function main() {
     await verifyContract({
       address: solidityCell.address,
       constructorArgs: [proofOfEscape.address],
-      provider: "blockscout"
+      provider: "etherscan"
     }, hre);
     console.log("✅ SolidityCell verified successfully!");
   } catch (error: any) {

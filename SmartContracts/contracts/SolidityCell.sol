@@ -6,14 +6,8 @@ import "./ProofOfEscape.sol";
 contract SolidityCell {
     // --- State Variables ---
 
-    // The instance of our NFT contract, set upon deployment.
     ProofOfEscape public immutable proofOfEscape;
-
-    // Mapping to track which cell each player has advanced to.
     mapping(address => uint) public playerProgress;
-
-    // The secret key for the first puzzle. It's private, but not secret!
-    bytes32 private immutable CELL1_HIDDEN_KEY;
 
     // --- Events ---
     event PlayerAdvanced(address indexed player, uint indexed toCell);
@@ -21,43 +15,51 @@ contract SolidityCell {
 
     // --- Constructor ---
     constructor(address _proofOfEscapeAddress) {
-        // Instantiate our NFT contract handle
         proofOfEscape = ProofOfEscape(_proofOfEscapeAddress);
-
-        // Generate a pseudo-random "hidden" key for the first puzzle
-        CELL1_HIDDEN_KEY = keccak256(
-            abi.encodePacked(block.timestamp, msg.sender)
-        );
     }
-
-    // In SolidityCell.sol
 
     // --- Puzzle #1: The Hashing Mismatch ---
     function solveCell1(bytes32 _hash) external {
-        require(playerProgress[msg.sender] == 0, "You are not at this cell.");
+        require(playerProgress[msg.sender] == 0, "You are not at Cell 1.");
 
-        // The contract calculates the hash the "correct" way, using standard ABI encoding.
         bytes32 expectedHash = keccak256(
             abi.encode("Correctly", uint256(123), msg.sender)
         );
 
-        // The player's first attempt will likely fail here.
         require(_hash == expectedHash, "Incorrect hash: check data packing.");
 
         playerProgress[msg.sender] = 1;
         emit PlayerAdvanced(msg.sender, 1);
     }
 
-    // --- Escape Function (Final Goal) ---
-    // We'll add more checks here as we add more puzzles
-    function escape() external {
-        // For now, let's assume there is only one puzzle to solve.
-        require(
-            playerProgress[msg.sender] == 1,
-            "You have not solved all the puzzles yet."
-        );
+    // --- Puzzle #2: The Data Oracle ---
+function solveCell2(
+    uint256 _txCount,
+    uint256 _daiTotalSupply,
+    bytes4 _gasGuzzlerSelector
+) external {
+    require(playerProgress[msg.sender] == 1, "You are not at Cell 2.");
 
-        // Mint the "Proof of Escape" NFT to the player
+    // The hardcoded answers for the updated puzzle questions.
+    // NOTE: The txCount is an example; you'd use the live value from your query service.
+    uint256 expectedTxCount = 8585803; 
+    uint256 expectedDaiSupply = 10078278786944695027589937962; // totalSupply at block 18,000,000
+    bytes4 expectedSelector = 0xa0712d68; // selector for "setStartingIndex()"
+
+    require(_txCount >= expectedTxCount, "Incorrect answer for Subgraph.");
+    require(_daiTotalSupply == expectedDaiSupply, "Incorrect answer for Token API.");
+    require(_gasGuzzlerSelector == expectedSelector, "Incorrect answer for Substream.");
+
+    playerProgress[msg.sender] = 2;
+    emit PlayerAdvanced(msg.sender, 2);
+}
+
+
+    // --- Escape Function (Final Goal) ---
+    function escape() external {
+        // The player must now have solved both puzzles to escape.
+        require(playerProgress[msg.sender] == 2, "You have not solved all the puzzles yet.");
+
         proofOfEscape.safeMint(msg.sender);
         emit PlayerEscaped(msg.sender);
     }
