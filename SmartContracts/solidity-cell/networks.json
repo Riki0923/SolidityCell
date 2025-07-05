@@ -1,0 +1,8 @@
+{
+  "base-sepolia": {
+    "SolidityCell": {
+      "address": "0x794501622797d2fe5faedb40e4ec97761069b374",
+      "startBlock": 27990618
+    }
+  }
+}
