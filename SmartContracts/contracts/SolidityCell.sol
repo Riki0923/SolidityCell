@@ -33,14 +33,12 @@ contract SolidityCell {
     }
 
     // --- Puzzle #2: The Data Oracle ---
-function solveCell2(uint256 _currentLevel) external {
-    // Check that the player has solved Cell #1
+function solveCell2(uint256 _firstToCellValue) external {
     require(playerProgress[msg.sender] == 1, "You are not at Cell 2.");
-    
-    // Check that the player correctly queried their own level from the subgraph
-    require(_currentLevel == 1, "Incorrect level provided.");
 
-    // Advance the player to the final cell
+    // The player must query their subgraph to find that the first advancement is to cell 1.
+    require(_firstToCellValue == 1, "Incorrect answer from your subgraph.");
+
     playerProgress[msg.sender] = 2;
     emit PlayerAdvanced(msg.sender, 2);
 }

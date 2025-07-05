@@ -55,10 +55,6 @@ async function getRestApiAnswer() {
     }
 }
 
-function getSubstreamAnswer() {
-    return "0xa0712d68";
-}
-
 // --- Main Execution ---
 
 async function main() {
@@ -68,13 +64,11 @@ async function main() {
     // Call both functions to get the separate answers
     const [answer1, answer2, answer3] = await Promise.all([
         getGraphQLAnswer(),
-        getRestApiAnswer(),
-        getSubstreamAnswer(),
+        getRestApiAnswer(),,
     ]);
 
     console.log("Answer 1 (GraphQL - newOwner):", answer1);
     console.log("Answer 2 (REST API - USDC Amount):", answer2);
-    console.log("Answer 3 (Substream - Gas Guzzler):", answer3);
 
     console.log("------------------------------------");
 }
