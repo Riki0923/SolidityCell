@@ -13,15 +13,15 @@ const config: HardhatUserConfig = {
       default: {
         version: "0.8.28",
       },
-      // production: {
-      //   version: "0.8.28",
-      //   settings: {
-      //     optimizer: {
-      //       enabled: true,
-      //       runs: 200,
-      //     },
-      //   },
-      // },
+      production: {
+        version: "0.8.28",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
     },
   },
 
@@ -29,13 +29,6 @@ chainDescriptors: {
   5003: {
     name: "mantleSepoliaTestnet",
     blockExplorers: {
-      // // The original etherscan entry
-      etherscan: {
-        name: "Mantle Sepolia Explorer (Etherscan)",
-        url: "https://explorer.sepolia.mantle.xyz/",
-        apiUrl: "https://explorer.sepolia.mantle.xyz/api",
-      },
-      // The requested blockscout entry
       blockscout: {
         name: "Mantle Sepolia Explorer (Blockscout)",
         url: "https://explorer.sepolia.mantle.xyz/",

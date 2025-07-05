@@ -33,32 +33,17 @@ contract SolidityCell {
     }
 
     // --- Puzzle #2: The Data Oracle ---
-    function solveCell2(
-        uint256 _txCount,
-        string calldata _tokenSymbol,
-        bytes4 _gasGuzzlerSelector
-    ) external {
-        require(playerProgress[msg.sender] == 1, "You are not at Cell 2.");
+function solveCell2(uint256 _currentLevel) external {
+    // Check that the player has solved Cell #1
+    require(playerProgress[msg.sender] == 1, "You are not at Cell 2.");
+    
+    // Check that the player correctly queried their own level from the subgraph
+    require(_currentLevel == 1, "Incorrect level provided.");
 
-        // The hardcoded answers to our new questions
-        uint256 expectedTxCount = 8585803; // Example value, update with the latest
-        string memory expectedTokenSymbol = "DAI";
-        bytes4 expectedSelector = 0xa0712d68;
-
-        require(_txCount >= expectedTxCount, "Incorrect answer for Subgraph.");
-        require(
-            keccak256(bytes(_tokenSymbol)) ==
-                keccak256(bytes(expectedTokenSymbol)),
-            "Incorrect answer for Token Symbol."
-        );
-        require(
-            _gasGuzzlerSelector == expectedSelector,
-            "Incorrect answer for Substream."
-        );
-
-        playerProgress[msg.sender] = 2;
-        emit PlayerAdvanced(msg.sender, 2);
-    }
+    // Advance the player to the final cell
+    playerProgress[msg.sender] = 2;
+    emit PlayerAdvanced(msg.sender, 2);
+}
 
     // --- Escape Function (Final Goal) ---
     function escape() external {

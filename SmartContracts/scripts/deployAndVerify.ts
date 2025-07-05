@@ -59,7 +59,6 @@ async function main() {
     console.log("Verifying ProofOfEscape...");
     await verifyContract({
       address: proofOfEscape.address,
-      constructorArgs: [],
       provider: "etherscan",
       
     }, hre);
