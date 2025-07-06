@@ -1,9 +1,10 @@
 import hre from "hardhat";
 import * as readline from "readline";
-
 import * as fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url"; // <-- Import this
+import { fileURLToPath } from "url";
+import { query0G } from "../utils/zeroG.js";
+
 
 // ES Module-safe way to get the current directory
 const __filename = fileURLToPath(import.meta.url);
@@ -71,6 +72,18 @@ async function main() {
     } else {
       console.error("\n❌ Invalid format. A bytes32 hash must be 66 characters long and start with '0x'. Please try again.\n");
     }
+            console.log("🤖 Asking 0G AI for help...");
+
+    const aiHint = await query0G(`
+I'm working on a Solidity puzzle.
+It says to compute keccak256(abi.encode("Correctly", 123, my_address)).
+
+But my result doesn't match the expected hash. What could go wrong?
+
+Explain possible issues in encoding, especially regarding abi.encode vs abi.encodePacked.
+Be concise and helpful.
+`);
+    console.log(`💡 0G AI says: ${aiHint}`);
   }
 
 
