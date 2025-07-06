@@ -58,7 +58,7 @@ You can request them here:
 npx hardhat run scripts/solvingFirstCell.ts --network baseSepolia
 
 If you get stuck, 0G AI will assist you with hints.
-
+bash```
 Use this helper script to generate the correct hash:
 
 // scripts/hashForCell1.ts
@@ -70,23 +70,23 @@ const encoded = encodeAbiParameters(
 );
 
 console.log("Hash:", keccak256(encoded));
-
+```
 Run it with:
-
+bash```
 npx hardhat run scripts/hashForCell1.ts
-
+```
     🧠 Replace "0xYourAddressHere" with your wallet address!
 
 ### ▶️ Puzzle 2: The Data Oracle
-
+bash```
 npx hardhat run scripts/solvingSecondCell.ts --network baseSepolia
-
+```
 Use helper scripts to find the correct data:
-
+bash```
 npx hardhat run scripts/getSubgraphAnswer.ts
 npx hardhat run scripts/getMySubgraphAnswer.ts
-
-✅ Correct answers for Cell #2:
+```
+### ✅ Correct answers for Cell #2:
 
     0x63dED784c8Da63A79eE47f9a53BcB1BAD1d9F3e0 (newOwner)
 
