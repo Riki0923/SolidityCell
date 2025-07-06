@@ -120,3 +120,5 @@ This project is:
 
 Good luck escaping the Solidity Cell!
 💻🔐🧠
+
+Hardhat test: run npx hardhat test test/SolidityCell.ts If you want to run tests on local
