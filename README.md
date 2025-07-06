@@ -6,60 +6,111 @@ Welcome to the Hardhat 3 alpha version! This project showcases some of the chang
 
 To learn more about the Hardhat 3 Alpha, please visit [its tutorial](https://hardhat.org/hardhat3-alpha). To share your feedback, join our [Hardhat 3 Alpha](https://hardhat.org/hardhat3-alpha-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new?template=hardhat-3-alpha.yml) in our GitHub issue tracker.
 
-## Project Overview
+## 🧩 Project Overview
 
-The Project name is Solidity Cell, an onchain escape Game, for project description and how it's built you can check it on this page: ETHGLOBAL one HAVE TO ADD THIS BEORE SUBMISSION
+**Solidity Cell** is an on-chain escape game built entirely with Hardhat v3.  
+Players solve EVM-based smart contract puzzles using CLI scripts, with help from The Graph and 0G AI.  
 
-HOW to use this project step-by-step:
+> 📌 Full project description, architecture, and credits will be added on the [ETHGlobal project page](#) before submission.
 
-After you cloned the repo to your computer, run npm install and set up your env file:
+---
 
-env file should contain the following:
+## 🚀 How to Use This Project
+
+### 1. Clone & Install
+
+```bash
+git clone https://github.com/YOUR_USERNAME/solidity-cell.git
+cd solidity-cell
+npm install
+
+2. Environment Setup
+
+Create a .env file in the root directory and add:
 
 PRIVATE_KEY=
 BASE_SEPOLIA_RPC_URL=
 ETHERSCAN_API_KEY=
-MANTLE_SEPOLIA_RPC_URL= 
+MANTLE_SEPOLIA_RPC_URL=
 ZERO_G_PRIVATE_KEY=
 
-THE PRIVATE_KEY and ZERO_G_PRIVATE_KEY are the same, but add it twice, later it is going to be fixed. 
+    ✅ PRIVATE_KEY and ZERO_G_PRIVATE_KEY should be the same (for now).
 
-MANTLE_SEPOLIA_RPC_URL you do not really need, just left it there because the project works on there too. 
+    🟡 MANTLE_SEPOLIA_RPC_URL is optional — the project also works there, but it’s unused here.
 
-Once you have those environment variables, you can start compiling && deploying
+3. Compile & Deploy
 
-run: npx hardhat compile --buildProfile production ( needed for hardhat v3 verification )
+Compile with Hardhat v3:
 
-run this command: npx hardhat run scripts/deployAndVeriy.ts --buildProfile production --network baseSepolia
+npx hardhat compile --buildProfile production
 
-the above command will deploy the two contracts (ProofOfEscape.sol and Soliditycell.sol)
+Then deploy the game contracts (ProofOfEscape + SolidityCell):
 
-You will need tokens on baseSepolia to run the transactions but also to use 0g AI you need their tokens as well, otherwise you won't be able to use their tool. You can request 0g tokens here: https://docs.0g.ai/developer-hub/testnet/testnet-overview
+npx hardhat run scripts/deployAndVeriy.ts --buildProfile production --network baseSepolia
 
-Once you have those you can start the game:
+    ⚠️ Requires testnet ETH on Base Sepolia.
 
-run: npx hardhat run scripts/solvingFirstCell.ts --network baseSepolia
+4. 🧠 0G AI Setup
 
-This will start the first puzzle which the user has to solve, if stuck, 0G AI will help. 
+To use the AI helper, you also need testnet 0G tokens.
 
-There is a helper function implemented, the hashForCell1.ts, that is containing the correct answer for Cell1. You can run it with this command: npx hardhat run scripts/hashForCell1.ts ( DO NOT FORGET TO CHANGE THE ADDRESS IN HERE TO YOURS!!!)
+You can request them from:
+https://docs.0g.ai/developer-hub/testnet/testnet-overview
 
-For second puzzle, run: npx hardhat run scripts/solvingSecondCell.ts --network baseSepolia
+🕹️ Start the Game
+▶️ Puzzle 1
 
-To solve this you will need to run the graph scripts, the getSubgraphAnswer.ts will contain the answer for the two first question, just simply run it, the third one you will need to create a subgraph of your own, but for now use the one builded in the getMySubgraphAnswer.ts file and just run it like the others: npx hardhat run scripts/getMySubgraphAnswer.ts
+npx hardhat run scripts/solvingFirstCell.ts --network baseSepolia
 
-I will leave the correct answers just in case here:
+If you’re stuck, 0G AI will provide hints.
 
-- 0x63dED784c8Da63A79eE47f9a53BcB1BAD1d9F3e0 (new Owner address)
-- 60975000 (USDC amount)
-- 1 (For the own subgraph )
+You can also use this helper script:
 
-If you pass these values, you will get to the third cell
+// scripts/hashForCell1.ts
 
-Last but not least, run the third cell: npx hardhat run scripts/solvingThirdCell.ts --network baseSepolia
+import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
 
-You will get a riddle here, implemented this for fun, the answer here is Knowledge.
+const encoded = encodeAbiParameters(
+  parseAbiParameters("string, uint256, address"),
+  ["Correctly", BigInt(123), "0xYourAddressHere"]
+);
 
-Once you done this the Nft should minted to your address and you can check it.
+console.log("Hash:", keccak256(encoded));
 
-HAVE FUN WITH THE GAME 
+Run it with:
+
+npx hardhat run scripts/hashForCell1.ts
+
+    🧠 Replace "0xYourAddressHere" with your wallet address!
+
+▶️ Puzzle 2
+
+npx hardhat run scripts/solvingSecondCell.ts --network baseSepolia
+
+Use the helper scripts to find answers:
+
+npx hardhat run scripts/getSubgraphAnswer.ts
+npx hardhat run scripts/getMySubgraphAnswer.ts
+
+✅ Correct Answers:
+
+    0x63dED784c8Da63A79eE47f9a53BcB1BAD1d9F3e0 (newOwner)
+
+    60975000 (USDC balance)
+
+    1 (toCell value)
+
+▶️ Puzzle 3
+
+npx hardhat run scripts/solvingThirdCell.ts --network baseSepolia
+
+This one presents a riddle. The answer is:
+
+Knowledge
+
+If answered correctly, the contract will mint you a Proof of Escape NFT!
+🎉 Have Fun
+
+This is a fully CLI-based game. No frontend. No distractions. Just smart contracts, viem, The Graph, and 0G AI.
+
+Good luck escaping! 💀🔐
