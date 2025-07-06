@@ -1,74 +1,102 @@
-# Hardhat 3 Alpha: `node:test` and `viem` example project
+# Solidity Cell 🧩 — A Hardhat 3 On-Chain Escape Game
 
-> **WARNING**: This example project uses Hardhat 3, which is still in development. Hardhat 3 is not yet intended for production use.
+> ⚠️ **WARNING:** This project uses Hardhat 3, which is currently in **alpha**. It’s intended for experimentation and learning — **not production** use.
 
-Welcome to the Hardhat 3 alpha version! This project showcases some of the changes and new features coming in Hardhat 3.
+Solidity Cell is a fully on-chain smart contract escape room, built on **Hardhat v3** using its native `viem` interface and the new `node:test` runner. Players solve Ethereum puzzles modeled after real-world security vulnerabilities like storage slot probing, ABI mispacking, and signature spoofing.
 
-To learn more about the Hardhat 3 Alpha, please visit [its tutorial](https://hardhat.org/hardhat3-alpha). To share your feedback, join our [Hardhat 3 Alpha](https://hardhat.org/hardhat3-alpha-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new?template=hardhat-3-alpha.yml) in our GitHub issue tracker.
+There’s **no frontend** — the CLI is the game.
 
-## Project Overview
-
-This example project includes:
-
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using [`node:test`](nodejs.org/api/test.html), the new Node.js native test runner, and [`viem`](https://viem.sh/).
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
-
-## Navigating the Project
-
-To get the most out of this example project, we recommend exploring the files in the following order:
-
-1. Read the `hardhat.config.ts` file, which contains the project configuration and explains multiple changes.
-2. Review the "Running Tests" section and explore the files in the `contracts/` and `test/` directories.
-3. Read the "Make a deployment to Sepolia" section and follow the instructions.
-
-Each file includes inline explanations of its purpose and highlights the changes and new features introduced in Hardhat 3.
-
-## Usage
-
-### Running Tests
-
-To run all the tests in the project, execute the following command:
-
-```shell
-npx hardhat test
-```
-
-You can also selectively run the Solidity or `node:test` tests:
-
-```shell
-npx hardhat test solidity
-npx hardhat test nodejs
-```
-
-### Make a deployment to Sepolia
-
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
-
-To run the deployment to a local chain:
-
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
-
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
-
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
-
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
-
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
-
-After setting the variable, you can run the deployment with the Sepolia network:
-
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+> 🔗 Learn more about Hardhat 3 Alpha [here](https://hardhat.org/hardhat3-alpha), or join the discussion in the [Telegram group](https://hardhat.org/hardhat3-alpha-telegram-group).
 
 ---
 
-Feel free to explore the project and provide feedback on your experience with Hardhat 3 Alpha!
-# SolidityCell
+## 📦 Getting Started
+
+### 1. Clone and install dependencies
+
+```bash
+git clone https://github.com/YOUR_REPO_URL
+cd solidity-cell
+npm install
+
+2. Set up your .env file
+
+Create a .env file at the root and add:
+
+PRIVATE_KEY=
+ZERO_G_PRIVATE_KEY=
+BASE_SEPOLIA_RPC_URL=
+ETHERSCAN_API_KEY=
+MANTLE_SEPOLIA_RPC_URL=  # Optional
+
+    ✅ PRIVATE_KEY and ZERO_G_PRIVATE_KEY should be the same for now. This will be cleaned up later.
+
+    🔄 MANTLE_SEPOLIA_RPC_URL is not currently required, but supported.
+
+3. Compile and deploy
+
+npx hardhat compile --buildProfile production
+npx hardhat run scripts/deployAndVeriy.ts --buildProfile production --network baseSepolia
+
+This will deploy:
+
+    ProofOfEscape.sol
+
+    SolidityCell.sol
+
+Make sure your wallet has testnet ETH and 0G tokens on Base Sepolia:
+
+    Request 0G tokens: 0G Testnet Faucet →
+
+🧠 Start Playing
+🧩 Cell #1: The Mismatched Hash
+
+npx hardhat run scripts/solvingFirstCell.ts --network baseSepolia
+
+If you're stuck, 0G AI will give you hints.
+You can also generate the correct hash manually:
+
+npx hardhat run scripts/hashForCell1.ts
+
+    🔧 Don’t forget to update the address in hashForCell1.ts to your own!
+
+🧩 Cell #2: The Data Oracle
+
+npx hardhat run scripts/solvingSecondCell.ts --network baseSepolia
+
+To solve this, you’ll need:
+
+    scripts/getSubgraphAnswer.ts → pulls data from Super Accounts subgraph
+
+    scripts/getMySubgraphAnswer.ts → fetches your custom subgraph’s answer
+
+npx hardhat run scripts/getSubgraphAnswer.ts
+npx hardhat run scripts/getMySubgraphAnswer.ts
+
+    📌 Default answers (if stuck):
+
+    0x63dED784c8Da63A79eE47f9a53BcB1BAD1d9F3e0
+
+    60975000
+
+    1
+
+🧩 Cell #3: The AI Riddle
+
+npx hardhat run scripts/solvingThirdCell.ts --network baseSepolia
+
+A riddle will be presented to you by 0G AI.
+The correct answer is: Knowledge
+
+If answered correctly, a Proof of Escape NFT will be minted to your address.
+🏁 Final Notes
+
+    This project is a CLI-first, dev-focused learning tool
+
+    Powered by Hardhat v3, The Graph, and 0G AI
+
+    Built for the ETHGlobal community
+
+    🧠 Learn. 🛠️ Hack. 🧩 Escape.
+
+Enjoy the game!
