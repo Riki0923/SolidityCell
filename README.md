@@ -8,67 +8,58 @@ To learn more about the Hardhat 3 Alpha, please visit [its tutorial](https://har
 
 ## Project Overview
 
-This example project includes:
+The Project name is Solidity Cell, an onchain escape Game, for project description and how it's built you can check it on this page: ETHGLOBAL one HAVE TO ADD THIS BEORE SUBMISSION
 
-- A simple Hardhat configuration file.
-- Foundry-compatible Solidity unit tests.
-- TypeScript integration tests using [`node:test`](nodejs.org/api/test.html), the new Node.js native test runner, and [`viem`](https://viem.sh/).
-- Examples demonstrating how to connect to different types of networks, including locally simulating OP mainnet.
+HOW to use this project step-by-step:
 
-## Navigating the Project
+After you cloned the repo to your computer, run npm install and set up your env file:
 
-To get the most out of this example project, we recommend exploring the files in the following order:
+env file should contain the following:
 
-1. Read the `hardhat.config.ts` file, which contains the project configuration and explains multiple changes.
-2. Review the "Running Tests" section and explore the files in the `contracts/` and `test/` directories.
-3. Read the "Make a deployment to Sepolia" section and follow the instructions.
+PRIVATE_KEY=
+BASE_SEPOLIA_RPC_URL=
+ETHERSCAN_API_KEY=
+MANTLE_SEPOLIA_RPC_URL= 
+ZERO_G_PRIVATE_KEY=
 
-Each file includes inline explanations of its purpose and highlights the changes and new features introduced in Hardhat 3.
+THE PRIVATE_KEY and ZERO_G_PRIVATE_KEY are the same, but add it twice, later it is going to be fixed. 
 
-## Usage
+MANTLE_SEPOLIA_RPC_URL you do not really need, just left it there because the project works on there too. 
 
-### Running Tests
+Once you have those environment variables, you can start compiling && deploying
 
-To run all the tests in the project, execute the following command:
+run: npx hardhat compile --buildProfile production ( needed for hardhat v3 verification )
 
-```shell
-npx hardhat test
-```
+run this command: npx hardhat run scripts/deployAndVeriy.ts --buildProfile production --network baseSepolia
 
-You can also selectively run the Solidity or `node:test` tests:
+the above command will deploy the two contracts (ProofOfEscape.sol and Soliditycell.sol)
 
-```shell
-npx hardhat test solidity
-npx hardhat test nodejs
-```
+You will need tokens on baseSepolia to run the transactions but also to use 0g AI you need their tokens as well, otherwise you won't be able to use their tool. You can request 0g tokens here: https://docs.0g.ai/developer-hub/testnet/testnet-overview
 
-### Make a deployment to Sepolia
+Once you have those you can start the game:
 
-This project includes an example Ignition module to deploy the contract. You can deploy this module to a locally simulated chain or to Sepolia.
+run: npx hardhat run scripts/solvingFirstCell.ts --network baseSepolia
 
-To run the deployment to a local chain:
+This will start the first puzzle which the user has to solve, if stuck, 0G AI will help. 
 
-```shell
-npx hardhat ignition deploy ignition/modules/Counter.ts
-```
+There is a helper function implemented, the hashForCell1.ts, that is containing the correct answer for Cell1. You can run it with this command: npx hardhat run scripts/hashForCell1.ts ( DO NOT FORGET TO CHANGE THE ADDRESS IN HERE TO YOURS!!!)
 
-To run the deployment to Sepolia, you need an account with funds to send the transaction. The provided Hardhat configuration includes a Configuration Variable called `SEPOLIA_PRIVATE_KEY`, which you can use to set the private key of the account you want to use.
+For second puzzle, run: npx hardhat run scripts/solvingSecondCell.ts --network baseSepolia
 
-You can set the `SEPOLIA_PRIVATE_KEY` variable using the `hardhat-keystore` plugin or by setting it as an environment variable.
+To solve this you will need to run the graph scripts, the getSubgraphAnswer.ts will contain the answer for the two first question, just simply run it, the third one you will need to create a subgraph of your own, but for now use the one builded in the getMySubgraphAnswer.ts file and just run it like the others: npx hardhat run scripts/getMySubgraphAnswer.ts
 
-To set the `SEPOLIA_PRIVATE_KEY` config variable using `hardhat-keystore`:
+I will leave the correct answers just in case here:
 
-```shell
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
-```
+- 0x63dED784c8Da63A79eE47f9a53BcB1BAD1d9F3e0 (new Owner address)
+- 60975000 (USDC amount)
+- 1 (For the own subgraph )
 
-After setting the variable, you can run the deployment with the Sepolia network:
+If you pass these values, you will get to the third cell
 
-```shell
-npx hardhat ignition deploy --network sepolia ignition/modules/Counter.ts
-```
+Last but not least, run the third cell: npx hardhat run scripts/solvingThirdCell.ts --network baseSepolia
 
----
+You will get a riddle here, implemented this for fun, the answer here is Knowledge.
 
-Feel free to explore the project and provide feedback on your experience with Hardhat 3 Alpha!
-# SolidityCell
+Once you done this the Nft should minted to your address and you can check it.
+
+HAVE FUN WITH THE GAME 
