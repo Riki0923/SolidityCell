@@ -1,42 +1,51 @@
 import axios from "axios";
 
-// --- PASTE YOUR NEW SUBGRAPH's QUERY URL HERE ---
-const MY_SUBGRAPH_URL = "https://api.studio.thegraph.com/query/115550/solidity-cell/version/latest";
+// --- Replace with your actual subgraph URL ---
+const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/115550/solidity-cell/version/latest";
 
-async function getFirstAdvancement() {
-  // This query gets the `toCell` value from the very first event emitted
-  const query = `{
-    playerAdvanceds(first: 1, orderBy: blockTimestamp, orderDirection: asc) {
-      toCell
+async function getFirstToCellValue(): Promise<string> {
+  const query = `
+    {
+      playerAdvanceds(first: 1, orderBy: blockTimestamp, orderDirection: asc) {
+        toCell
+      }
     }
-  }`;
-  
+  `;
+
   try {
-    const response = await axios.post(MY_SUBGRAPH_URL, { query });
-    if (response.data.errors) {
-      console.error("GraphQL Error:", response.data.errors);
+    const { data } = await axios.post(SUBGRAPH_URL, { query });
+
+    if (data.errors) {
+      console.error("❌ GraphQL Error:", data.errors);
       return "GraphQL Error";
     }
 
-    const advancements = response.data.data.playerAdvanceds;
-    if (!advancements.length) {
-      console.error("No playerAdvanceds found.");
+    const events = data.data.playerAdvanceds;
+
+    if (!events.length) {
+      console.warn("⚠️ No playerAdvanceds events found in subgraph.");
       return "No data";
     }
 
-    return advancements[0].toCell;
-  } catch (error) {
-    console.error("Network Error:", (error as Error).message);
+    return events[0].toCell;
+
+  } catch (err: any) {
+    console.error("❌ Network or Query Error:", err.message);
     return "Error";
   }
 }
 
 async function main() {
-  console.log("🔍 Fetching answer from your custom subgraph...");
-  const answer = await getFirstAdvancement();
-  console.log("------------------------------------");
-  console.log("Answer (First 'toCell' value):", answer);
-  console.log("------------------------------------");
+  console.log("🔍 Querying your custom subgraph...");
+  
+  const result = await getFirstToCellValue();
+
+  console.log("\n====================================");
+  console.log("📦 First `toCell` Value:", result);
+  console.log("====================================\n");
 }
 
-main().catch(error => { console.error(error); });
+main().catch((err) => {
+  console.error("Unhandled Error:", err);
+  process.exit(1);
+});

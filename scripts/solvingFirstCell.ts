@@ -5,24 +5,24 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { query0G } from "../utils/zeroG.js";
 
-
-// ES Module-safe way to get the current directory
+// --- RESOLVE __dirname FOR ES MODULES ---
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Helper function to read the deployed addresses
+// --- HELPER: Load deployed contract address ---
 function getDeployedAddresses() {
   const filePath = path.join(__dirname, "..", "deployedAddresses.json");
   const addresses = JSON.parse(fs.readFileSync(filePath, "utf-8"));
   return addresses;
 }
 
-// Helper function to prompt the user for input in the terminal
+// --- HELPER: Prompt CLI user for input ---
 function promptUser(question: string): Promise<string> {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
+
   return new Promise((resolve) => {
     rl.question(question, (answer) => {
       rl.close();
@@ -31,83 +31,66 @@ function promptUser(question: string): Promise<string> {
   });
 }
 
+// --- MAIN FLOW ---
 async function main() {
-    // 1. WELCOME MESSAGE & SETUP
   console.log("========================================");
-  console.log("    WELCOME TO SOLIDITY CELL");
-  console.log("========================================");
-  console.log("\nYou are a developer trapped in a series of smart contract cells.");
-  console.log("You must use your skills to find and exploit vulnerabilities to escape.\n");
+  console.log("        WELCOME TO SOLIDITY CELL        ");
+  console.log("========================================\n");
+  console.log("🔒 You're trapped in a smart contract escape room.");
+  console.log("Solve the puzzle to unlock the first cell.\n");
 
-
-  // Get the deployed contract address from the file
   const { solidityCell: SOLIDITY_CELL_ADDRESS } = getDeployedAddresses();
-
-  console.log(`▶️ Attacking contract at: ${SOLIDITY_CELL_ADDRESS}`);
+  console.log(`🔗 Contract Address: ${SOLIDITY_CELL_ADDRESS}\n`);
 
   const { viem } = await hre.network.connect();
-
-  // Get an instance of the already-deployed SolidityCell contract
-  const solidityCellContract = await viem.getContractAt("SolidityCell", SOLIDITY_CELL_ADDRESS)
-
-  // Also get the publicClient for waitin on tx hashes
+  const contract = await viem.getContractAt("SolidityCell", SOLIDITY_CELL_ADDRESS);
   const publicClient = await viem.getPublicClient();
 
-  // 2. PRESENT PUZZLE #1
-  console.log(                "--- Puzzle #1: The Mismatched Hash ---"              );
-  console.log("The contract expects a specific keccak256 hash to unlock the first cell.");
-  console.log("The hash is derived from: abi.encode(\"Correctly\", 123, your_address)");
-  console.log("Hint: The devil is in the details of data packing.\n");
+  console.log("📦 --- Puzzle #1: The Mismatched Hash ---");
+  console.log("To solve this puzzle, you must compute the correct keccak256 hash.");
+  console.log(`Derived from: keccak256(abi.encode("Correctly", 123, your_address))`);
+  console.log("⚠️  Hint: Encoding matters — packed vs non-packed!\n");
 
-  // 3. GET USER INPUT
-  // 3. GET USER INPUT WITH A LOOP
-  let userAnswer = "";
   let isValidFormat = false;
+  let userAnswer = "";
 
   while (!isValidFormat) {
-    userAnswer = await promptUser("Enter the correct bytes32 hash to solve Cell #1: ");
+    userAnswer = await promptUser("🧩 Enter the correct bytes32 hash: ");
 
     if (userAnswer.startsWith("0x") && userAnswer.length === 66) {
       isValidFormat = true;
     } else {
-      console.error("\n❌ Invalid format. A bytes32 hash must be 66 characters long and start with '0x'. Please try again.\n");
+      console.log("❌ Invalid format. Expected a 66-character hex string starting with 0x.\n");
     }
-            console.log("🤖 Asking 0G AI for help...");
 
+    // Ask AI for help
+    console.log("🤖 Asking 0G AI for guidance...");
     const aiHint = await query0G(`
-I'm working on a Solidity puzzle.
-It says to compute keccak256(abi.encode("Correctly", 123, my_address)).
+      I'm solving a Solidity puzzle involving a keccak256 hash of:
+      abi.encode("Correctly", 123, my_address).
 
-But my result doesn't match the expected hash. What could go wrong?
-
-Explain possible issues in encoding, especially regarding abi.encode vs abi.encodePacked.
-Be concise and helpful.
-`);
-    console.log(`💡 0G AI says: ${aiHint}`);
+      My result isn't matching. What could go wrong?
+      Briefly explain any encoding issues like abi.encode vs abi.encodePacked.
+    `);
+    console.log(`💡 0G AI says:\n${aiHint}\n`);
   }
 
-
-  // ATTEMPT 1: THE FAILING WAY (MIMICKING abi.encodePacked)
-  const [wallet1, wallet2] = await viem.getWalletClients();
-
-// 4. ATTEMPT TO SOLVE
-  console.log("\n🔓 Submitting your hash to the contract...");
+  // 🔓 ATTEMPT TO SOLVE THE PUZZLE
   try {
-    const solveHash = await solidityCellContract.write.solveCell1([userAnswer as `0x${string}`]);
-    await publicClient.waitForTransactionReceipt({ hash: solveHash });
-    console.log("🎉 CORRECT! The first cell is unlocked. You have advanced.");
+    console.log("🔓 Submitting your answer to the contract...");
+    const txHash = await contract.write.solveCell1([userAnswer as `0x${string}`]);
+    await publicClient.waitForTransactionReceipt({ hash: txHash });
+    console.log("\n✅ SUCCESS! The first cell is unlocked. Well done.\n");
   } catch (error: any) {
-    console.error("\n🔥 INCORRECT! The contract rejected your hash. Please check your logic and try again.");
-    // Log the specific revert reason if available
-    if(error.shortMessage) {
-      console.error("Revert Reason:", error.shortMessage);
+    console.error("\n🔥 The contract rejected your answer.");
+    if (error.shortMessage) {
+      console.error("↳ Revert Reason:", error.shortMessage);
     }
+    console.log("🔁 Try again after reviewing your encoding logic.\n");
   }
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+main().catch((err) => {
+  console.error("💥 Fatal error:", err);
+  process.exit(1);
+});
