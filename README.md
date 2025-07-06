@@ -21,7 +21,7 @@ Players solve EVM-based puzzles using CLI scripts, with support from **The Graph
 git clone https://github.com/YOUR_USERNAME/solidity-cell.git
 cd solidity-cell
 npm install
-
+```bash
 ### 2. Environment Setup
 
 Create a .env file in the root directory:
