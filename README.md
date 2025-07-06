@@ -1,21 +1,19 @@
-# Hardhat 3 Alpha: `node:test` and `viem` example project
+# 🧪 Hardhat 3 Alpha: `node:test` and `viem` Example Project
 
-> **WARNING**: This example project uses Hardhat 3, which is still in development. Hardhat 3 is not yet intended for production use.
-
-Welcome to the Hardhat 3 alpha version! This project showcases some of the changes and new features coming in Hardhat 3.
-
-To learn more about the Hardhat 3 Alpha, please visit [its tutorial](https://hardhat.org/hardhat3-alpha). To share your feedback, join our [Hardhat 3 Alpha](https://hardhat.org/hardhat3-alpha-telegram-group) Telegram group or [open an issue](https://github.com/NomicFoundation/hardhat/issues/new?template=hardhat-3-alpha.yml) in our GitHub issue tracker.
-
-## 🧩 Project Overview
-
-**Solidity Cell** is an on-chain escape game built entirely with Hardhat v3.  
-Players solve EVM-based smart contract puzzles using CLI scripts, with help from The Graph and 0G AI.  
-
-> 📌 Full project description, architecture, and credits will be added on the [ETHGlobal project page](#) before submission.
+> ⚠️ **Warning**: This project uses Hardhat v3 (Alpha), which is currently under development and not intended for production use.
 
 ---
 
-## 🚀 How to Use This Project
+## 🧩 Project Overview
+
+**Solidity Cell** is an on-chain smart contract escape game built entirely with Hardhat v3.  
+Players solve EVM-based puzzles using CLI scripts, with support from **The Graph** for data indexing and **0G AI** for cryptographic hints.
+
+> 📌 Full project description will be added to the [ETHGlobal project page](#) before submission.
+
+---
+
+## 🚀 Getting Started
 
 ### 1. Clone & Install
 
@@ -26,48 +24,44 @@ npm install
 
 2. Environment Setup
 
-Create a .env file in the root directory and add:
+Create a .env file in the root directory:
 
 PRIVATE_KEY=
+ZERO_G_PRIVATE_KEY=
 BASE_SEPOLIA_RPC_URL=
 ETHERSCAN_API_KEY=
 MANTLE_SEPOLIA_RPC_URL=
-ZERO_G_PRIVATE_KEY=
 
-    ✅ PRIVATE_KEY and ZERO_G_PRIVATE_KEY should be the same (for now).
+    ✅ Use the same value for both PRIVATE_KEY and ZERO_G_PRIVATE_KEY for now.
+    🟡 MANTLE_SEPOLIA_RPC_URL is optional — the game also runs on Mantle, but it's not used here.
 
-    🟡 MANTLE_SEPOLIA_RPC_URL is optional — the project also works there, but it’s unused here.
-
-3. Compile & Deploy
+3. Compile & Deploy Contracts
 
 Compile with Hardhat v3:
 
 npx hardhat compile --buildProfile production
 
-Then deploy the game contracts (ProofOfEscape + SolidityCell):
+Deploy to Base Sepolia:
 
 npx hardhat run scripts/deployAndVeriy.ts --buildProfile production --network baseSepolia
 
     ⚠️ Requires testnet ETH on Base Sepolia.
 
-4. 🧠 0G AI Setup
+4. 🧠 Setup 0G AI
 
-To use the AI helper, you also need testnet 0G tokens.
-
-You can request them from:
-https://docs.0g.ai/developer-hub/testnet/testnet-overview
-
+To use the AI hint engine, you'll need 0G testnet tokens.
+You can request them here:
+👉 https://docs.0g.ai/developer-hub/testnet/testnet-overview
 🕹️ Start the Game
-▶️ Puzzle 1
+▶️ Puzzle 1: The Mismatched Hash
 
 npx hardhat run scripts/solvingFirstCell.ts --network baseSepolia
 
-If you’re stuck, 0G AI will provide hints.
+If you get stuck, 0G AI will assist you with hints.
 
-You can also use this helper script:
+Use this helper script to generate the correct hash:
 
 // scripts/hashForCell1.ts
-
 import { encodeAbiParameters, keccak256, parseAbiParameters } from "viem";
 
 const encoded = encodeAbiParameters(
@@ -83,34 +77,44 @@ npx hardhat run scripts/hashForCell1.ts
 
     🧠 Replace "0xYourAddressHere" with your wallet address!
 
-▶️ Puzzle 2
+▶️ Puzzle 2: The Data Oracle
 
 npx hardhat run scripts/solvingSecondCell.ts --network baseSepolia
 
-Use the helper scripts to find answers:
+Use helper scripts to find the correct data:
 
 npx hardhat run scripts/getSubgraphAnswer.ts
 npx hardhat run scripts/getMySubgraphAnswer.ts
 
-✅ Correct Answers:
+✅ Correct answers for Cell #2:
 
     0x63dED784c8Da63A79eE47f9a53BcB1BAD1d9F3e0 (newOwner)
 
     60975000 (USDC balance)
 
-    1 (toCell value)
+    1 (toCell value from subgraph)
 
-▶️ Puzzle 3
+▶️ Puzzle 3: The Final Riddle
 
 npx hardhat run scripts/solvingThirdCell.ts --network baseSepolia
 
-This one presents a riddle. The answer is:
+You’ll receive a cryptic riddle from 0G AI.
+The correct answer is:
 
 Knowledge
 
-If answered correctly, the contract will mint you a Proof of Escape NFT!
-🎉 Have Fun
+Once solved, you'll receive a Proof of Escape NFT directly to your wallet.
+🏁 You Escaped!
 
-This is a fully CLI-based game. No frontend. No distractions. Just smart contracts, viem, The Graph, and 0G AI.
+This project is:
 
-Good luck escaping! 💀🔐
+    CLI-only (no frontend)
+
+    Powered by Hardhat v3 and viem
+
+    Indexed by The Graph
+
+    Enhanced with 0G AI
+
+Good luck escaping the Solidity Cell!
+💻🔐🧠
