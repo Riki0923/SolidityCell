@@ -22,7 +22,7 @@ git clone https://github.com/YOUR_USERNAME/solidity-cell.git
 cd solidity-cell
 npm install
 
-2. Environment Setup
+### 2. Environment Setup
 
 Create a .env file in the root directory:
 
@@ -35,7 +35,7 @@ MANTLE_SEPOLIA_RPC_URL=
     ✅ Use the same value for both PRIVATE_KEY and ZERO_G_PRIVATE_KEY for now.
     🟡 MANTLE_SEPOLIA_RPC_URL is optional — the game also runs on Mantle, but it's not used here.
 
-3. Compile & Deploy Contracts
+### 3. Compile & Deploy Contracts
 
 Compile with Hardhat v3:
 
@@ -47,13 +47,13 @@ npx hardhat run scripts/deployAndVeriy.ts --buildProfile production --network ba
 
     ⚠️ Requires testnet ETH on Base Sepolia.
 
-4. 🧠 Setup 0G AI
+### 4. 🧠 Setup 0G AI
 
 To use the AI hint engine, you'll need 0G testnet tokens.
 You can request them here:
 👉 https://docs.0g.ai/developer-hub/testnet/testnet-overview
 🕹️ Start the Game
-▶️ Puzzle 1: The Mismatched Hash
+### ▶️ Puzzle 1: The Mismatched Hash
 
 npx hardhat run scripts/solvingFirstCell.ts --network baseSepolia
 
@@ -77,7 +77,7 @@ npx hardhat run scripts/hashForCell1.ts
 
     🧠 Replace "0xYourAddressHere" with your wallet address!
 
-▶️ Puzzle 2: The Data Oracle
+### ▶️ Puzzle 2: The Data Oracle
 
 npx hardhat run scripts/solvingSecondCell.ts --network baseSepolia
 
@@ -94,7 +94,7 @@ npx hardhat run scripts/getMySubgraphAnswer.ts
 
     1 (toCell value from subgraph)
 
-▶️ Puzzle 3: The Final Riddle
+### ▶️ Puzzle 3: The Final Riddle
 
 npx hardhat run scripts/solvingThirdCell.ts --network baseSepolia
 
