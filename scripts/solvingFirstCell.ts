@@ -61,8 +61,6 @@ async function main() {
       isValidFormat = true;
     } else {
       console.log("❌ Invalid format. Expected a 66-character hex string starting with 0x.\n");
-    }
-
     // Ask AI for help
     console.log("🤖 Asking 0G AI for guidance...");
     const aiHint = await query0G(`
@@ -73,6 +71,9 @@ async function main() {
       Briefly explain any encoding issues like abi.encode vs abi.encodePacked.
     `);
     console.log(`💡 0G AI says:\n${aiHint}\n`);
+    }
+
+
   }
 
   // 🔓 ATTEMPT TO SOLVE THE PUZZLE

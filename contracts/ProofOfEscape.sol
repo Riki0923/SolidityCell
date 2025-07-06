@@ -19,10 +19,10 @@ contract ProofOfEscape is ERC721, Ownable {
      * @dev Can only be called by the current owner of this contract.
      * We will transfer ownership to the SolidityCell contract after deployment.
      */
-    function safeMint(address to) public onlyOwner {
+    function mint(address to) public onlyOwner {
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter++;
-        _safeMint(to, tokenId);
+        _mint(to, tokenId);
     }
 
     /**

@@ -66,8 +66,7 @@ contract SolidityCell {
 
     // --- Final Step: Mint the NFT ---
     function mintProofNFT() external {
-        require(playerProgress[msg.sender] == 3, "You must complete all cells.");
-        proofOfEscape.safeMint(msg.sender);
+        proofOfEscape.mint(msg.sender);
         emit PlayerEscaped(msg.sender);
     }
 }
